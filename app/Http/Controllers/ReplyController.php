@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reply;
+use App\Models\Question;
 use Illuminate\Http\Request;
+use App\Http\Resources\ReplyResource;
 
 class ReplyController extends Controller
 {
@@ -14,28 +16,20 @@ class ReplyController extends Controller
      */
     public function index()
     {
-        //
+        return ReplyResource::collection(Reply::latest()->get());
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
+  
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Question $question, Request $request)
     {
-        //
+        $reply = $question->replies()->create($request->all());
+
+        return response(['reply' => new ReplyResource($reply)],201);
     }
 
     /**
@@ -44,21 +38,12 @@ class ReplyController extends Controller
      * @param  \App\Models\Reply  $reply
      * @return \Illuminate\Http\Response
      */
-    public function show(Reply $reply)
+    public function show(Question $question, Reply $reply)
     {
-        //
+        return new ReplyResource($reply);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Reply  $reply
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Reply $reply)
-    {
-        //
-    }
+ 
 
     /**
      * Update the specified resource in storage.
@@ -67,9 +52,11 @@ class ReplyController extends Controller
      * @param  \App\Models\Reply  $reply
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Reply $reply)
+    public function update(Question $question, Request $request, Reply $reply)
     {
-        //
+        $reply->update($request->all());
+
+        return response('Updated',202);
     }
 
     /**
@@ -80,6 +67,8 @@ class ReplyController extends Controller
      */
     public function destroy(Reply $reply)
     {
-        //
+        $reply->delete();
+
+        return response(null,204);
     }
 }

@@ -7,7 +7,9 @@ use App\Models\Reply;
 
 class Like extends Model
 {
+    protected $guarded = [];
     public function reply(){
         return $this->belongsTo(Reply::class);
     }
+
 }
